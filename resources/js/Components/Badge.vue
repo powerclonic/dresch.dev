@@ -18,11 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { ToolName } from "@/types";
+import { computed, PropType } from "vue";
 
 const props = defineProps({
     tool: {
-        type: String,
+        type: String as PropType<ToolName>,
         required: true,
     },
     icon: {
