@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  push:
+    branches: ["main", "feature/automated-deploy"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v4
+
+      - name: Copy files to host
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASS }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ vars.SOURCE_DIR }}
+          target: ${{ secrets.TARGET_DIR }}
+
+      - name: Update the application
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASS }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.TARGET_DIR }}
+            cp ${{ secrets.ENVIRONMENT_DIR }}/.env .env
+            composer install
+            npm install
+            npm run build
