@@ -22,7 +22,7 @@ jobs:
           source: ${{ vars.SOURCE_DIR }}
           target: ${{ secrets.TARGET_DIR }}
 
-      - name: Update the Frontend
+      - name: Update the application
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -32,5 +32,6 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR }}
             cp ${{ secrets.ENVIRONMENT_DIR }}/.env .env
+            composer install
             npm install
             npm run build
